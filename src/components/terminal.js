@@ -5,6 +5,8 @@ import BootLoader from './BootLoader';
 
 const Terminal = () => {
   const [bootComplete, setBootComplete] = useState(false);
+  const [showStartupMsg, setShowStartupMsg] = useState(false);
+  const [startupMsgDone, setStartupMsgDone] = useState(false);
   const [history, setHistory] = useState([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -25,6 +27,34 @@ const Terminal = () => {
       historyEl.scrollTop = historyEl.scrollHeight;
     }
   }, [history]);
+
+  // Run startup message typing after boot finishes
+  useEffect(() => {
+  if (showStartupMsg) {
+    const startupMessage =
+      "System initialized. Welcome to Brain Terminal.\nType '--help' to see available commands.";
+
+    setIsTyping(true);
+
+    // Add an empty line to start building the message into
+    setHistory((prev) => [...prev, '']);
+    let currentLineIndex = history.length;
+
+    simulateTyping(startupMessage, (partialText) => {
+      // Update the last line in the history with current typed text
+      setHistory((prev) => {
+        const updated = [...prev];
+        updated[currentLineIndex] = partialText;
+        return updated;
+      });
+    }).then(() => {
+      setIsTyping(false);
+      setStartupMsgDone(true);
+      setShowStartupMsg(false);
+    });
+  }
+}, [showStartupMsg]);
+
 
   const handleCommand = async () => {
     const trimmed = input.trim();
@@ -65,24 +95,37 @@ const Terminal = () => {
 
   return (
     <div style={styles.container}>
-      {!bootComplete && <BootLoader onFinish={() => setBootComplete(true)} />}
+      {!bootComplete && (
+        <BootLoader
+          onFinish={() => {
+            setBootComplete(true);
+            setShowStartupMsg(true);
+          }}
+        />
+      )}
 
       {bootComplete && (
         <div ref={historyRef} style={styles.history}>
           {history.map((line, index) => (
-            <div key={index} style={styles.line}>{line}</div>
+            <div key={index} style={styles.line}>
+              {line}
+            </div>
           ))}
 
-          <div style={styles.inputLine}>
-            <span style={styles.prompt}>Ak2176/Brain{getCurrentPath()} $</span>
-            <input
-              autoFocus
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              style={styles.input}
-            />
-          </div>
+          {startupMsgDone && (
+            <div style={styles.inputLine}>
+              <span style={styles.prompt}>Ak2176/Brain{getCurrentPath()} $</span>
+              <input
+                autoFocus
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                style={styles.input}
+                disabled={isTyping}
+              />
+            </div>
+          )}
+
           <div ref={bottomRef} />
         </div>
       )}

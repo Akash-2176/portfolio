@@ -1,17 +1,16 @@
 // src/utils/simulateTyping.js
-const SimulateTyping = (text, delay = 20) =>
-  new Promise((resolve) => {
-    let result = '';
-    let i = 0;
+const SimulateTyping = async (text, onUpdate = null, delay = 20) => {
+  let current = '';
 
-    const interval = setInterval(() => {
-      result += text[i];
-      i++;
-      if (i === text.length) {
-        clearInterval(interval);
-        resolve(result);
-      }
-    }, delay);
-  });
+  for (let i = 0; i < text.length; i++) {
+    current += text[i];
+    if (onUpdate) {
+      onUpdate(current);
+    }
+    await new Promise((res) => setTimeout(res, delay));
+  }
+
+  return current;
+};
 
 export default SimulateTyping;
