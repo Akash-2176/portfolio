@@ -1,5 +1,5 @@
 // src/utils/simulateTyping.js
-const SimulateTyping = async (text, onUpdate = null, delay = 20) => {
+const SimulateTyping = async (text, onUpdate = null, delay = 30) => {
   let current = '';
 
   for (let i = 0; i < text.length; i++) {

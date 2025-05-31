@@ -30,3 +30,31 @@ html, body, #root {
   font-family: monospace;
   overflow: hidden; /* kill scrolling */
 }
+
+input:focus {
+  caret-shape: block; /* Not supported everywhere, fallback below */
+}
+
+input::selection {
+  background: #00ff00;
+  color: #000;
+}
+
+/* Blink effect like a real terminal */
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+
+input[type="text"] {
+  border: none;
+  background: transparent;
+  outline: none;
+  color: #00ff00;
+  font-family: monospace;
+  font-size: 1em;
+  caret-color: transparent; /* hides system caret */
+  animation: blink 1s step-end infinite;
+}

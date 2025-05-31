@@ -13,55 +13,64 @@ const Terminal = () => {
   const [cmdHistory, setCmdHistory] = useState([]);
   const [cmdIndex, setCmdIndex] = useState(-1);
 
-  const bottomRef = useRef(null);
   const historyRef = useRef(null);
+  const bottomRef = useRef(null);
+  const inputRef = useRef(null);
 
+  const blockCursorStyle = {
+    display: 'inline-block',
+    backgroundColor: '#00ff00',
+    width: '0.6ch',
+    height: '1.2em',
+    marginLeft: '1px',
+    animation: 'blink 1s step-end infinite',
+  };
+
+  // Smooth scroll if user is at bottom
   useEffect(() => {
-    const historyEl = historyRef.current;
-    if (!historyEl) return;
+    const el = historyRef.current;
+    if (!el) return;
 
-    const shouldScroll =
-      historyEl.scrollTop + historyEl.clientHeight >= historyEl.scrollHeight - 100;
-
-    if (shouldScroll) {
-      historyEl.scrollTop = historyEl.scrollHeight;
-    }
+    const isNearBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 100;
+    if (isNearBottom) el.scrollTop = el.scrollHeight;
   }, [history]);
 
-  // Run startup message typing after boot finishes
+  // Focus input line when ready
   useEffect(() => {
-  if (showStartupMsg) {
-    const startupMessage =
-      "System initialized. Welcome to Brain Terminal.\nType '--help' to see available commands.";
+    if (startupMsgDone && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [startupMsgDone]);
 
-    setIsTyping(true);
+  // Startup Message Typing
+  useEffect(() => {
+    if (showStartupMsg) {
+      const message = `System initialized. Welcome to My Terminal.\nType '--help' to see available commands.`;
+      setIsTyping(true);
+      setHistory((prev) => [...prev, '']);
+      const lineIndex = history.length;
 
-    // Add an empty line to start building the message into
-    setHistory((prev) => [...prev, '']);
-    let currentLineIndex = history.length;
-
-    simulateTyping(startupMessage, (partialText) => {
-      // Update the last line in the history with current typed text
-      setHistory((prev) => {
-        const updated = [...prev];
-        updated[currentLineIndex] = partialText;
-        return updated;
+      simulateTyping(message, (partialText) => {
+        setHistory((prev) => {
+          const updated = [...prev];
+          updated[lineIndex] = partialText;
+          return updated;
+        });
+      }).then(() => {
+        setIsTyping(false);
+        setStartupMsgDone(true);
+        setShowStartupMsg(false);
       });
-    }).then(() => {
-      setIsTyping(false);
-      setStartupMsgDone(true);
-      setShowStartupMsg(false);
-    });
-  }
-}, [showStartupMsg]);
+    }
+  }, [showStartupMsg]);
 
-
+  // Command Handling
   const handleCommand = async () => {
     const trimmed = input.trim();
     if (!trimmed) return;
 
-    const currentPrompt = `Ak2176/Brain${getCurrentPath()} > ${trimmed}`;
-    setHistory((prev) => [...prev, currentPrompt]);
+    const prompt = `Ak2176/Root${getCurrentPath()} > ${trimmed}`;
+    setHistory((prev) => [...prev, prompt]);
     setCmdHistory((prev) => [...prev, trimmed]);
     setCmdIndex(-1);
     setInput('');
@@ -72,16 +81,29 @@ const Terminal = () => {
     if (result === '__CLEAR__') {
       setHistory([]);
     } else {
-      const output = await simulateTyping(result);
-      setHistory((prev) => [...prev, output]);
+      setHistory((prev) => [...prev, '']);
+      const outputIndex = history.length + 1;
+
+      await simulateTyping(result, (partialText) => {
+        setHistory((prev) => {
+          const updated = [...prev];
+          updated[outputIndex] = partialText;
+          return updated;
+        });
+      });
     }
 
     setIsTyping(false);
   };
 
+  // Keyboard Input Handling (Custom Typing)
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !isTyping) {
+    if (isTyping) return;
+
+    if (e.key === 'Enter') {
       handleCommand();
+    } else if (e.key === 'Backspace') {
+      setInput((prev) => prev.slice(0, -1));
     } else if (e.key === 'ArrowUp') {
       const newIndex = cmdIndex < cmdHistory.length - 1 ? cmdIndex + 1 : cmdIndex;
       setCmdIndex(newIndex);
@@ -90,6 +112,8 @@ const Terminal = () => {
       const newIndex = cmdIndex > 0 ? cmdIndex - 1 : -1;
       setCmdIndex(newIndex);
       setInput(newIndex >= 0 ? cmdHistory[cmdHistory.length - 1 - newIndex] : '');
+    } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+      setInput((prev) => prev + e.key);
     }
   };
 
@@ -106,26 +130,22 @@ const Terminal = () => {
 
       {bootComplete && (
         <div ref={historyRef} style={styles.history}>
-          {history.map((line, index) => (
-            <div key={index} style={styles.line}>
-              {line}
-            </div>
+          {history.map((line, i) => (
+            <div key={i} style={styles.line}>{line}</div>
           ))}
 
           {startupMsgDone && (
-            <div style={styles.inputLine}>
-              <span style={styles.prompt}>Ak2176/Brain{getCurrentPath()} $</span>
-              <input
-                autoFocus
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                style={styles.input}
-                disabled={isTyping}
-              />
+            <div
+              style={styles.inputLine}
+              tabIndex={0}
+              ref={inputRef}
+              onKeyDown={handleKeyDown}
+            >
+              <span style={styles.prompt}>Ak2176/Root{getCurrentPath()} $ </span>
+              <span>{input}</span>
+              {!isTyping && <span style={blockCursorStyle} />}
             </div>
           )}
-
           <div ref={bottomRef} />
         </div>
       )}
@@ -135,7 +155,7 @@ const Terminal = () => {
 
 const styles = {
   container: {
-    backgroundColor: '#0000',
+    backgroundColor: '#000',
     color: '#00ff00',
     height: '100vh',
     fontFamily: 'monospace',
@@ -143,6 +163,7 @@ const styles = {
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
+    cursor: 'none',
   },
   history: {
     flex: 1,
@@ -161,15 +182,7 @@ const styles = {
   inputLine: {
     display: 'flex',
     alignItems: 'center',
-  },
-  input: {
-    background: 'none',
-    border: 'none',
     outline: 'none',
-    color: '#00ff00',
-    fontFamily: 'monospace',
-    fontSize: '1em',
-    flex: 1,
   },
 };
 
