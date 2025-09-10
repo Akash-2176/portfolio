@@ -7,7 +7,7 @@ const fileSystem = {
         children: {
             name: {
                 type: 'dir',
-                children: { 'about.txt': 'Akash aka Boss — Software Engineer in the making 👨‍💻' }
+                children: { 'about.txt': 'Akash   Boss — Software Engineer in the making 👨‍💻' }
             },
             interest: {
                 type: 'dir',

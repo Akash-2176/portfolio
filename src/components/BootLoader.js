@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 
 const asciiLogo = [
-  "   ___   ____   _      ___ ",
-  "  / _ | / _  | / |    / _ |",
-  " / _  |/ /_| | | |   / /_| |",
-  "/_/ |_|____/ |_|__ /____/ |",
-  "                        |__|",
-  "      A K   C M D   L I N E",
+  "",
+    "  █████╗ ██╗  ██╗ ██████╗██╗     ██╗ ",
+    " ██╔══██╗██║ ██╔╝██╔════╝██║     ██║ ",
+    " ███████║█████╔╝ ██║     ██║     ██║ ",
+    " ██╔══██║██╔═██╗ ██║     ██║     ██║ ",
+    " ██║  ██║██║  ██╗╚██████╗███████╗██║ ",
+    " ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚══════╝╚═╝ ",
   "",
   "Booting up ACLI Terminal...",
   "Initializing memory...",
@@ -35,7 +36,7 @@ const BootLoader = ({ onFinish }) => {
   return (
     <div style={styles.bootContainer}>
       {lines.map((line, idx) => (
-        <pre key={idx} style={styles.line}>{line}</pre>
+        <div key={idx} style={styles.line}>{line}</div>
       ))}
     </div>
   );
@@ -45,17 +46,19 @@ const styles = {
   bootContainer: {
     color: '#00ff00',
     fontFamily: 'monospace',
-    fontSize: '1em',
+    fontSize: '3em',
     whiteSpace: 'pre-wrap',
     backgroundColor: 'black',
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'center', // center vertically
-    alignItems: 'center',     // center horizontally
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  line: {
+    lineHeight: '1.5em',
   },
 };
-
 
 
 export default BootLoader;
