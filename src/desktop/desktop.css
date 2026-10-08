@@ -64,7 +64,7 @@
   font-size: 64px;
   line-height: 1;
   color: var(--fg);
-  opacity: 0.08;
+  opacity: 0.12;
   letter-spacing: 0.1em;
   pointer-events: none;
   user-select: none;
@@ -106,7 +106,7 @@
   font-size: 24px;
   text-shadow: var(--glow);
 }
-.icon-label { font-size: 17px; padding: 0 3px; }
+.icon-label { font-size: 17px; padding: 0 3px; background: color-mix(in srgb, var(--bg) 75%, transparent); }
 .icon:hover .icon-glyph { box-shadow: 3px 3px 0 var(--fg); }
 .icon.selected .icon-label, .icon:focus-visible .icon-label { background: var(--fg); color: var(--bg); text-shadow: none; }
 .icon:focus-visible { outline: none; }

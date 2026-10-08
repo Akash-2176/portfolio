@@ -1,9 +1,8 @@
 // `flag` is the terminal flag: `skills --<flag>`
 export const skills = [
-  { flag: 'languages', label: 'Languages', items: ['Java', 'Kotlin', 'JavaScript', 'TypeScript', 'PHP', 'Python', 'SQL'] },
-  { flag: 'frameworks', label: 'Frameworks', items: ['React', 'Next.js', 'Express', 'NestJS', 'Laravel', 'Spring Boot', 'Serverless'] },
-  { flag: 'ai', label: 'AI / ML', items: ['CNN', 'GANs', 'Image Processing', 'TensorFlow', 'PyTorch'] },
-  { flag: 'infra', label: 'Infrastructure', items: ['AWS Lambda', 'EC2', 'S3', 'Linux', 'PM2', 'Docker', 'CI/CD'] },
-  { flag: 'databases', label: 'Databases', items: ['PostgreSQL', 'MongoDB', 'SQLite', 'Supabase'] },
-  { flag: 'tools', label: 'Tools', items: ['Git', 'REST APIs', 'Figma', 'WeWeb', 'LeafletJS', 'Esri Maps'] },
+  { flag: 'languages', label: 'Languages & Frameworks', items: ['Java', 'Spring Boot', 'Python', 'Node.js', 'Express.js', 'JUnit', 'SQL'] },
+  { flag: 'databases', label: 'Databases & Messaging', items: ['PostgreSQL', 'MongoDB', 'Redis', 'Supabase', 'Apache Kafka', 'SQLite'] },
+  { flag: 'cloud', label: 'Cloud & DevOps', items: ['AWS Lambda', 'SQS', 'EC2', 'S3', 'Serverless', 'Docker', 'Kubernetes', 'GitHub Actions'] },
+  { flag: 'architecture', label: 'Architecture & Security', items: ['Microservices', 'REST APIs', 'GraphQL', 'Spring Security', 'JWT', 'OAuth 2.0', 'OpenAPI', 'Agile/Scrum'] },
+  { flag: 'ai', label: 'AI / Vision', items: ['OpenCV', 'YOLOv8', 'PyTesseract', 'FastAPI'] },
 ];

@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Blocks } from '../blocks/Blocks';
 import Terminal from '../terminal/Terminal';
 import { projects } from '../data/projects';
 import { skills } from '../data/skills';
-import { profile } from '../data/profile';
+import { company, profile } from '../data/profile';
 import {
   contactBlocks,
   educationBlocks,
@@ -12,7 +12,7 @@ import {
   projectBlocks,
   whoamiBlocks,
 } from '../content/views';
-import { THEMES, useSettings } from '../system/settings';
+import { THEMES, WALLPAPERS, useSettings } from '../system/settings';
 import { play } from '../system/sound';
 import './apps.css';
 
@@ -34,6 +34,10 @@ const About = () => (
 const Projects = ({ variant, props }) => {
   const [selected, setSelected] = useState(props?.slug ?? (variant === 'desktop' ? projects[0].slug : null));
   const current = projects.find((p) => p.slug === selected);
+  // Re-opening the window with a slug (e.g. from the Featured widget) selects that project.
+  useEffect(() => {
+    if (props?.slug) setSelected(props.slug);
+  }, [props?.slug]);
   const select = (slug) => {
     play('click');
     setSelected(slug);
@@ -132,6 +136,9 @@ const Contact = () => (
       <a className="btn" href={profile.links.linkedin} target="_blank" rel="noreferrer" onClick={() => play('click')}>
         LinkedIn
       </a>
+      <a className="btn" href={company.url} target="_blank" rel="noopener" onClick={() => play('click')}>
+        {company.name} ↗
+      </a>
     </div>
   </Page>
 );
@@ -176,18 +183,46 @@ export const ThemePicker = () => {
   );
 };
 
+const WallpaperPicker = () => {
+  const { wallpaper, setWallpaper } = useSettings();
+  return (
+    <div className="theme-picker" role="radiogroup" aria-label="Background">
+      {WALLPAPERS.map((w) => (
+        <button
+          key={w.id}
+          type="button"
+          role="radio"
+          aria-checked={wallpaper === w.id}
+          className={wallpaper === w.id ? 'active' : ''}
+          onClick={() => {
+            setWallpaper(w.id);
+            play('click');
+          }}
+        >
+          {w.label}
+        </button>
+      ))}
+    </div>
+  );
+};
+
 export const SettingsPanel = ({ system }) => {
-  const { muted, setMuted, crt, setCrt } = useSettings();
+  const { muted, setMuted, crt, setCrt, setStyle } = useSettings();
   return (
     <>
       <h3 className="blk-heading">phosphor</h3>
       <ThemePicker />
+      <h3 className="blk-heading">background</h3>
+      <WallpaperPicker />
       <h3 className="blk-heading">system</h3>
       <Toggle label="Sound effects" on={!muted} onChange={(v) => setMuted(!v)} />
       <Toggle label="CRT scanlines & flicker" on={crt} onChange={setCrt} />
       <div className="app-actions">
         <button type="button" className="btn" onClick={() => system.reboot()}>
           ↻ Replay boot
+        </button>
+        <button type="button" className="btn" onClick={() => setStyle('modern')}>
+          ✦ Switch to Modern style
         </button>
       </div>
     </>

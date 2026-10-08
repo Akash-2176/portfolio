@@ -12,6 +12,9 @@ const ctx = () => ({
   setMuted: vi.fn(),
   crt: true,
   setCrt: vi.fn(),
+  wallpaper: 'blackhole',
+  setWallpaper: vi.fn(),
+  setStyle: vi.fn(),
   history: ['help'],
   device: 'desktop',
 });
@@ -46,6 +49,15 @@ describe('command registry', () => {
     const c = ctx();
     runCommand('theme amber', c);
     expect(c.setTheme).toHaveBeenCalledWith('amber');
+  });
+
+  it('switches wallpaper and art style', () => {
+    const c = ctx();
+    runCommand('wallpaper synthwave', c);
+    expect(c.setWallpaper).toHaveBeenCalledWith('synthwave');
+    expect(runCommand('wallpaper nope', c)[0].tone).toBe('error');
+    runCommand('style modern', c);
+    expect(c.setStyle).toHaveBeenCalledWith('modern');
   });
 
   it('shows a project by number', () => {

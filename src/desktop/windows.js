@@ -18,6 +18,13 @@ export function windowsReducer(state, action) {
       if (existing) {
         return { z: z + 1, windows: update(action.appId, { z: z + 1, minimized: false, props: action.props ?? existing.props }) };
       }
+      if (action.rect) {
+        const { x, y, w, h } = action.rect;
+        return {
+          z: z + 1,
+          windows: [...windows, { appId: action.appId, x, y, w, h, z: z + 1, minimized: false, maximized: false, props: action.props }],
+        };
+      }
       const { vw, vh } = action.viewport;
       const [w, h] = clampSize(getApp(action.appId).size, vw, vh);
       const n = windows.length;

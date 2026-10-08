@@ -1,0 +1,187 @@
+:root[data-style='choose'] body {
+  background: #050507;
+  text-shadow: none;
+}
+
+.chooser {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  background: #050507;
+}
+
+.chooser-head,
+.chooser-foot {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  font-family: 'Inter', system-ui, sans-serif;
+  color: #f3f3f7;
+  text-align: center;
+  pointer-events: none;
+  white-space: nowrap;
+  font-size: 15px;
+}
+.chooser-head {
+  top: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 22px;
+  border-radius: 999px;
+  background: rgba(10, 10, 14, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.chooser-head span { color: #9a9aaa; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; }
+.chooser-head strong { font-family: 'Space Grotesk', 'Inter', sans-serif; font-size: 20px; font-weight: 600; }
+.chooser-foot { bottom: 18px; color: #8a8a99; font-size: 13px; }
+
+.choice {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  align-items: flex-end;
+  transition: flex-grow 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.4s;
+  font: inherit;
+}
+.hover-retro .choice-retro,
+.hover-modern .choice-modern { flex-grow: 1.45; }
+.hover-retro .choice-modern,
+.hover-modern .choice-retro { filter: brightness(0.55) saturate(0.7); }
+.choice:focus-visible { outline: none; }
+.choice:focus-visible .choice-cta { outline: 2px solid currentColor; outline-offset: 4px; }
+
+.choice-body {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: clamp(24px, 6vw, 72px);
+  padding-bottom: clamp(56px, 9vh, 96px);
+  max-width: 520px;
+}
+.choice-kicker { font-size: 14px; letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.7; }
+.choice-title { font-size: clamp(48px, 7vw, 96px); line-height: 0.95; }
+.choice-desc { font-size: 18px; line-height: 1.45; opacity: 0.8; max-width: 34ch; }
+.choice-cta { margin-top: 8px; align-self: flex-start; }
+
+/* ── Retro side ──────────────────────────────────────────────── */
+.choice-retro {
+  background:
+    linear-gradient(rgba(51, 255, 102, 0.06) 1px, transparent 1px) 0 0 / 32px 32px,
+    linear-gradient(90deg, rgba(51, 255, 102, 0.06) 1px, transparent 1px) 0 0 / 32px 32px,
+    radial-gradient(ellipse at 50% 35%, #0b2412, #030804 70%);
+  color: #33ff66;
+  font-family: 'VT323', monospace;
+  text-shadow: 0 0 6px rgba(51, 255, 102, 0.6);
+}
+.choice-retro::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.25) 0 1px, transparent 1px 3px);
+  pointer-events: none;
+}
+.choice-retro .choice-title { letter-spacing: 0.04em; }
+.choice-retro .choice-desc { font-size: 22px; }
+.choice-retro .choice-kicker { font-size: 20px; }
+.choice-retro .choice-cta { font-size: 26px; color: #ffb000; text-shadow: 0 0 8px rgba(255, 176, 0, 0.6); }
+.choice-retro:hover .choice-cta { background: #ffb000; color: #030804; text-shadow: none; }
+
+.retro-screen {
+  position: absolute;
+  top: 22%;
+  left: clamp(24px, 6vw, 72px);
+  right: clamp(24px, 6vw, 72px);
+  max-width: 440px;
+  padding: 18px 20px;
+  border: 2px solid #33ff66;
+  border-radius: 14px;
+  box-shadow: 0 0 30px rgba(51, 255, 102, 0.25), inset 0 0 30px rgba(51, 255, 102, 0.15);
+  display: flex;
+  flex-direction: column;
+  font-size: 22px;
+}
+.retro-line {
+  opacity: 0;
+  animation: retro-in 0.01s forwards;
+  animation-delay: calc(0.5s + var(--i) * 0.45s);
+}
+@keyframes retro-in { to { opacity: 1; } }
+.retro-cursor { animation: retro-blink 0.8s steps(1, end) infinite; }
+@keyframes retro-blink { 50% { opacity: 0; } }
+
+/* ── Modern side ─────────────────────────────────────────────── */
+.choice-modern {
+  --mx: 50%;
+  --my: 40%;
+  background: #08080d;
+  color: #f4f4f8;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.choice-modern .choice-title {
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  background: linear-gradient(120deg, #fff 20%, #a78bfa 55%, #22d3ee 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.choice-modern .choice-cta {
+  font-weight: 600;
+  padding: 12px 22px;
+  border-radius: 999px;
+  background: #f4f4f8;
+  color: #08080d;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.choice-modern:hover .choice-cta { transform: translateX(6px); box-shadow: 0 10px 40px rgba(139, 92, 246, 0.5); }
+
+.modern-aurora { position: absolute; inset: 0; filter: blur(60px); opacity: 0.85; }
+.modern-aurora i {
+  position: absolute;
+  width: 46vmax;
+  height: 46vmax;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+  animation: aurora 14s ease-in-out infinite alternate;
+}
+.modern-aurora i:nth-child(1) { background: #7c3aed; top: -18%; left: -10%; }
+.modern-aurora i:nth-child(2) { background: #0891b2; top: 20%; right: -20%; animation-delay: -5s; animation-duration: 17s; }
+.modern-aurora i:nth-child(3) { background: #db2777; bottom: -30%; left: 20%; animation-delay: -9s; animation-duration: 20s; opacity: 0.6; }
+@keyframes aurora {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(8%, 10%) scale(1.15); }
+  100% { transform: translate(-6%, 4%) scale(0.9); }
+}
+.modern-spot {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(400px circle at var(--mx) var(--my), rgba(255, 255, 255, 0.12), transparent 60%);
+}
+
+@media (max-width: 760px) {
+  .chooser { flex-direction: column; }
+  .choice { align-items: flex-end; }
+  .choice-body { padding: 20px 20px 28px; gap: 6px; }
+  .choice-title { font-size: 48px; }
+  .choice-desc { font-size: 16px; }
+  .choice-retro .choice-desc { font-size: 20px; }
+  .retro-screen { top: 86px; font-size: 18px; padding: 10px 14px; }
+  .chooser-head { top: 10px; padding: 6px 16px; }
+  .chooser-head strong { font-size: 16px; }
+  .chooser-foot { display: none; }
+}
+@media (max-width: 760px) and (max-height: 700px) {
+  .retro-screen { display: none; }
+}

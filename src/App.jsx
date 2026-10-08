@@ -1,17 +1,20 @@
 import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import Boot from './boot/Boot';
+import Chooser from './chooser/Chooser';
 import { SettingsProvider, useSettings } from './system/settings';
 import { useIsDesktop, useReducedMotion } from './system/hooks';
 import { load, save, session } from './system/storage';
 import { unlockAudio } from './system/sound';
 
-// Code-split so phones never download the window manager (and vice versa).
+// Code-split so each experience only downloads what it renders.
 const loadDesktop = () => import('./desktop/Desktop');
 const loadHandheld = () => import('./handheld/Handheld');
+const loadModern = () => import('./modern/Modern');
 const Desktop = lazy(loadDesktop);
 const Handheld = lazy(loadHandheld);
+const Modern = lazy(loadModern);
 
-function Shell() {
+function RetroShell() {
   const { crt } = useSettings();
   const isDesktop = useIsDesktop();
   const reducedMotion = useReducedMotion();
@@ -53,10 +56,25 @@ function Shell() {
   );
 }
 
+const preload = (style) => (style === 'modern' ? loadModern() : loadDesktop());
+
+function Root() {
+  const { style } = useSettings();
+  if (style === 'modern') {
+    return (
+      <Suspense fallback={null}>
+        <Modern />
+      </Suspense>
+    );
+  }
+  if (style === 'retro') return <RetroShell />;
+  return <Chooser preload={preload} />;
+}
+
 export default function App() {
   return (
     <SettingsProvider>
-      <Shell />
+      <Root />
     </SettingsProvider>
   );
 }

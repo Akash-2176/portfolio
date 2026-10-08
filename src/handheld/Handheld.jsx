@@ -1,9 +1,10 @@
 import { useCallback, useMemo, useState } from 'react';
 import { APPS, getApp } from '../apps/meta';
 import { APP_COMPONENTS, SettingsPanel } from '../apps/apps';
-import { profile } from '../data/profile';
+import { company, profile } from '../data/profile';
 import { useClock } from '../system/hooks';
 import { play } from '../system/sound';
+import Wallpaper from '../wallpapers/Wallpaper';
 import './handheld.css';
 
 // Settings lives in the ☰ sheet, so it isn't on the home grid.
@@ -48,7 +49,8 @@ export default function Handheld({ reboot }) {
         <span>{clock}</span>
       </header>
 
-      <main className="hh-screen phosphor-grid">
+      <main className="hh-screen">
+        <Wallpaper />
         {App ? (
           <div className="hh-app" key={current.appId}>
             <App system={system} variant="mobile" focused props={current.props} />
@@ -58,6 +60,9 @@ export default function Handheld({ reboot }) {
             <div className="hh-hello">
               <div className="hh-name">{profile.name}</div>
               <div className="tone-dim">{profile.title}</div>
+              <a className="hh-company" href={company.url} target="_blank" rel="noopener">
+                {company.role} @ {company.name} ↗
+              </a>
             </div>
             <nav className="hh-grid" aria-label="Apps">
               {HOME_APPS.map((app) => (

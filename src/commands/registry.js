@@ -1,9 +1,10 @@
-import { profile } from '../data/profile';
+import { company, profile } from '../data/profile';
 import { projects } from '../data/projects';
 import { skills } from '../data/skills';
 import { APPS, findApp } from '../apps/meta';
-import { THEMES } from '../system/settings';
+import { THEMES, WALLPAPERS } from '../system/settings';
 import {
+  companyBlocks,
   contactBlocks,
   educationBlocks,
   experienceBlocks,
@@ -35,6 +36,7 @@ export const COMMANDS = [
     },
   },
   { name: 'experience', aliases: ['work'], desc: 'Work history', run: () => experienceBlocks() },
+  { name: 'ezuraarc', aliases: ['company', 'studio'], desc: `${company.role} @ ${company.name}`, run: () => companyBlocks() },
   { name: 'education', desc: 'Education', run: () => educationBlocks() },
   {
     name: 'skills',
@@ -72,11 +74,11 @@ export const COMMANDS = [
   },
   {
     name: 'open',
-    args: '<app|github|linkedin>',
-    complete: () => [...APPS.map((a) => a.id), 'github', 'linkedin'],
+    args: '<app|github|linkedin|ezuraarc>',
+    complete: () => [...APPS.map((a) => a.id), ...Object.keys(profile.links)],
     desc: 'Open an app or link',
     run: ([target], ctx) => {
-      if (!target) return err('usage: open <app|github|linkedin>   (see `ls`)');
+      if (!target) return err('usage: open <app|github|linkedin|ezuraarc>   (see `ls`)');
       if (profile.links[target]) {
         window.open(profile.links[target], '_blank', 'noopener');
         return [text(`Opening ${target}…`, 'dim')];
@@ -101,6 +103,37 @@ export const COMMANDS = [
       if (!THEMES.some((t) => t.id === name)) return err(`theme: unknown '${name}'`);
       ctx.setTheme(name);
       return [text(`✓ phosphor switched → ${name}`)];
+    },
+  },
+  {
+    name: 'wallpaper',
+    aliases: ['bg'],
+    args: '[name]',
+    complete: () => WALLPAPERS.map((w) => w.id),
+    desc: 'Change desktop background',
+    run: ([name], ctx) => {
+      if (!name)
+        return [
+          text(['current: ', { b: ctx.wallpaper }]),
+          text(WALLPAPERS.flatMap((w, i) => [i ? '  ' : '', { cmd: `wallpaper ${w.id}`, label: w.id }])),
+        ];
+      if (!WALLPAPERS.some((w) => w.id === name)) return err(`wallpaper: unknown '${name}'`);
+      ctx.setWallpaper(name);
+      return [text(`✓ background → ${name}`)];
+    },
+  },
+  {
+    name: 'style',
+    args: '[retro|modern]',
+    complete: () => ['modern', 'retro'],
+    desc: 'Switch art style',
+    run: ([name], ctx) => {
+      if (name === 'modern') {
+        ctx.setStyle('modern');
+        return [text('Switching to modern style…', 'dim')];
+      }
+      if (!name || name === 'retro') return [text(['current: retro. Try ', { cmd: 'style modern' }])];
+      return err(`style: unknown '${name}'`);
     },
   },
   {

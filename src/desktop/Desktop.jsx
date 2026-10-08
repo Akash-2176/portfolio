@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { APPS, getApp } from '../apps/meta';
 import { APP_COMPONENTS } from '../apps/apps';
-import { THEMES, useSettings } from '../system/settings';
+import { THEMES, WALLPAPERS, useSettings } from '../system/settings';
+import Wallpaper from '../wallpapers/Wallpaper';
+import Widgets from './Widgets';
 import { useClock } from '../system/hooks';
 import { play } from '../system/sound';
 import Window from './Window';
@@ -9,7 +11,7 @@ import { focusedWindow, initialWindows, windowsReducer } from './windows';
 import './desktop.css';
 
 const TopBar = ({ title, onMenu }) => {
-  const { theme, setTheme, muted, setMuted } = useSettings();
+  const { theme, setTheme, muted, setMuted, wallpaper, setWallpaper } = useSettings();
   const clock = useClock();
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
@@ -38,12 +40,25 @@ const TopBar = ({ title, onMenu }) => {
             <button role="menuitem" type="button" onClick={() => pick('terminal')}>New Terminal</button>
             <button role="menuitem" type="button" onClick={() => pick('settings')}>Settings…</button>
             <hr />
+            <button role="menuitem" type="button" onClick={() => pick('modern')}>Switch to Modern style</button>
             <button role="menuitem" type="button" onClick={() => pick('reboot')}>Restart…</button>
           </div>
         )}
       </div>
       <span className="topbar-title">{title}</span>
       <div className="topbar-right">
+        <button
+          type="button"
+          className="topbar-btn"
+          title="Change background"
+          onClick={() => {
+            const i = WALLPAPERS.findIndex((w) => w.id === wallpaper);
+            setWallpaper(WALLPAPERS[(i + 1) % WALLPAPERS.length].id);
+            play('click');
+          }}
+        >
+          BG: {WALLPAPERS.find((w) => w.id === wallpaper)?.label}
+        </button>
         <span className="topbar-themes" role="radiogroup" aria-label="Phosphor color">
           {THEMES.map((t) => (
             <button
@@ -95,9 +110,11 @@ const Icon = ({ app, selected, onSelect, onOpen }) => (
 );
 
 export default function Desktop({ reboot }) {
+  const { setStyle } = useSettings();
   const [state, dispatch] = useReducer(windowsReducer, initialWindows);
   const [selected, setSelected] = useState(null);
   const areaRef = useRef(null);
+  const iconsRef = useRef(null);
   const [bounds, setBounds] = useState({ w: window.innerWidth, h: window.innerHeight - 72 });
 
   useEffect(() => {
@@ -119,9 +136,14 @@ export default function Desktop({ reboot }) {
     dispatch({ type: 'close', appId });
   }, []);
 
-  // Land with the terminal open.
+  // Land with the terminal open, docked bottom-left beside the icons so the wallpaper stays visible.
   useEffect(() => {
-    dispatch({ type: 'open', appId: 'terminal', viewport: { vw: window.innerWidth, vh: window.innerHeight } });
+    const area = areaRef.current;
+    const left = (iconsRef.current?.offsetLeft ?? 16) + (iconsRef.current?.offsetWidth ?? 96) + 20;
+    const w = Math.min(600, area.clientWidth * 0.42);
+    const h = Math.min(380, area.clientHeight * 0.5);
+    const rect = area.clientWidth >= 1100 ? { x: left, y: area.clientHeight - h - 24, w, h } : undefined;
+    dispatch({ type: 'open', appId: 'terminal', rect, viewport: { vw: window.innerWidth, vh: window.innerHeight } });
   }, []);
 
   const focused = focusedWindow(state.windows);
@@ -146,20 +168,28 @@ export default function Desktop({ reboot }) {
     [openApp, closeApp, reboot],
   );
 
-  const onMenu = (action) => (action === 'reboot' ? reboot() : openApp(action));
+  const onMenu = (action) => {
+    if (action === 'reboot') reboot();
+    else if (action === 'modern') setStyle('modern');
+    else openApp(action);
+  };
 
   return (
     <div className="desktop power-on">
       <TopBar title={focused ? getApp(focused.appId).title : 'Desktop'} onMenu={onMenu} />
 
-      <main className="workspace phosphor-grid" ref={areaRef} onPointerDown={(e) => e.target === e.currentTarget && setSelected(null)}>
-        <nav className="icons" aria-label="Desktop">
+      <main className="workspace" ref={areaRef} onPointerDown={(e) => e.target === e.currentTarget && setSelected(null)}>
+        <Wallpaper />
+
+        <nav className="icons" aria-label="Desktop" ref={iconsRef}>
           {APPS.map((app) => (
             <Icon key={app.id} app={app} selected={selected === app.id} onSelect={setSelected} onOpen={openApp} />
           ))}
         </nav>
 
         <div className="wallpaper-mark" aria-hidden="true">ACLI-OS</div>
+
+        <Widgets openApp={openApp} />
 
         {state.windows.map((win) => {
           const App = APP_COMPONENTS[win.appId];

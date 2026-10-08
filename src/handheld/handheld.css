@@ -40,8 +40,9 @@
 }
 
 .hh-app {
+  position: relative;
   height: 100%;
-  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  background: var(--bg);
   animation: hh-slide 0.18s ease-out;
 }
 @keyframes hh-slide {
@@ -50,6 +51,7 @@
 }
 
 .hh-home {
+  position: relative;
   height: 100%;
   overflow-y: auto;
   padding: 24px 16px;
@@ -57,6 +59,7 @@
   flex-direction: column;
   gap: 24px;
 }
+.hh-hello { align-self: flex-start; padding: 6px 10px; background: color-mix(in srgb, var(--bg) 70%, transparent); }
 .hh-name { font-size: 40px; line-height: 1; text-shadow: var(--glow); }
 
 .hh-grid {
@@ -89,6 +92,7 @@
   text-shadow: var(--glow);
 }
 .hh-tile:active .hh-tile-glyph { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--dim); background: var(--fg); color: var(--bg); }
+.hh-tile-label { background: color-mix(in srgb, var(--bg) 75%, transparent); padding: 0 4px; }
 .hh-tip { margin: auto 0 0; text-align: center; }
 
 .hh-sheet {
@@ -122,3 +126,4 @@
 .hh-nav button + button { border-left: 1px solid var(--line); }
 .hh-nav button:active, .hh-nav button[aria-expanded='true'] { background: var(--fg); color: var(--bg); }
 .hh-nav button:disabled { color: var(--dim); }
+.hh-company { color: var(--accent); text-decoration: none; display: inline-block; margin-top: 4px; }
