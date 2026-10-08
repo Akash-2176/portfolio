@@ -1,0 +1,106 @@
+.term {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  cursor: text;
+}
+
+.term-log {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 10px 14px 14px;
+  overflow-wrap: anywhere;
+}
+
+.term-entry { margin-bottom: 8px; }
+.term-line { white-space: pre-wrap; }
+.term-prompt { color: var(--accent); white-space: nowrap; }
+
+.term-input-line {
+  display: flex;
+  gap: 1ch;
+  align-items: baseline;
+  cursor: text;
+}
+
+.term-field {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.term-mirror { white-space: pre; }
+
+.term-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  font: inherit;
+  color: transparent;
+  caret-color: transparent;
+  background: transparent;
+  border: 0;
+  outline: none;
+  padding: 0;
+  margin: 0;
+}
+.term-input::selection { background: var(--fg); color: transparent; }
+
+.term-cursor {
+  background: var(--fg);
+  color: var(--bg);
+  animation: term-blink 1s steps(1, end) infinite;
+}
+.term-cursor.idle {
+  background: transparent;
+  color: inherit;
+  outline: 1px solid var(--dim);
+  animation: none;
+}
+
+@keyframes term-blink {
+  50% { background: transparent; color: inherit; }
+}
+
+.term-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 2ch;
+  padding-left: calc(10ch + 1ch);
+  color: var(--dim);
+}
+.term-suggestions button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0 2px;
+  cursor: pointer;
+}
+.term-suggestions button.active,
+.term-suggestions button:hover { background: var(--dim); color: var(--bg); }
+
+.term-chips {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 8px 10px;
+  border-top: 1px solid var(--line);
+  scrollbar-width: none;
+}
+.term-chips button {
+  flex: none;
+  font: inherit;
+  color: var(--fg);
+  background: transparent;
+  border: 1px solid var(--dim);
+  padding: 6px 12px;
+  min-height: 40px;
+  cursor: pointer;
+}
+.term-chips button:active { background: var(--fg); color: var(--bg); }
+
+.term-mobile .term-suggestions { padding-left: 0; gap: 8px; margin-top: 6px; }
+.term-mobile .term-suggestions button { border: 1px solid var(--dim); padding: 4px 10px; min-height: 36px; }

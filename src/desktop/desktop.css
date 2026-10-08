@@ -1,0 +1,212 @@
+.desktop {
+  height: 100%;
+  display: grid;
+  grid-template-rows: 32px 1fr 40px;
+}
+
+/* ── Top bar ─────────────────────────────────────────────────── */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 10px;
+  background: var(--fg);
+  color: var(--bg);
+  text-shadow: none;
+  z-index: 5000;
+}
+.topbar button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+.topbar-menu { position: relative; }
+.topbar-logo { padding: 2px 8px; font-weight: bold; }
+.topbar-logo[aria-expanded='true'], .topbar-logo:hover { background: var(--bg); color: var(--fg); }
+.topbar-title { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.topbar-right { display: flex; align-items: center; gap: 14px; }
+.topbar-btn { padding: 2px 6px; }
+.topbar-btn:hover { background: var(--bg); color: var(--fg); }
+.topbar-themes { display: flex; gap: 6px; }
+.topbar-themes button {
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  background: var(--sw);
+  border: 2px solid var(--bg);
+}
+.topbar-themes button.active { outline: 2px solid var(--bg); outline-offset: 1px; }
+
+.menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 200px;
+  background: var(--panel);
+  color: var(--fg);
+  border: 1px solid var(--fg);
+  box-shadow: 4px 4px 0 var(--dim);
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0;
+  text-shadow: inherit;
+}
+.menu button { text-align: left; padding: 4px 14px; }
+.menu button:hover, .menu button:focus-visible { background: var(--fg); color: var(--bg); outline: none; }
+.menu hr { border: 0; border-top: 1px dashed var(--dim); margin: 4px 0; width: 100%; }
+
+/* ── Workspace ───────────────────────────────────────────────── */
+.workspace {
+  position: relative;
+  overflow: hidden;
+}
+
+.wallpaper-mark {
+  position: absolute;
+  right: 28px;
+  bottom: 18px;
+  font-size: 64px;
+  line-height: 1;
+  color: var(--fg);
+  opacity: 0.08;
+  letter-spacing: 0.1em;
+  pointer-events: none;
+  user-select: none;
+}
+
+.icons {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  bottom: 16px;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(auto-fill, 92px);
+  grid-auto-columns: 96px;
+  gap: 6px;
+}
+
+.icon {
+  font: inherit;
+  color: var(--fg);
+  background: none;
+  border: 1px solid transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px;
+  cursor: pointer;
+}
+.icon-glyph {
+  width: 48px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--fg);
+  background: var(--bg);
+  box-shadow: 3px 3px 0 var(--dim);
+  font-size: 24px;
+  text-shadow: var(--glow);
+}
+.icon-label { font-size: 17px; padding: 0 3px; }
+.icon:hover .icon-glyph { box-shadow: 3px 3px 0 var(--fg); }
+.icon.selected .icon-label, .icon:focus-visible .icon-label { background: var(--fg); color: var(--bg); text-shadow: none; }
+.icon:focus-visible { outline: none; }
+
+/* ── Windows ─────────────────────────────────────────────────── */
+.win {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  border: 1px solid var(--dim);
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.6);
+  min-width: 0;
+  animation: win-open 0.16s steps(3, end);
+}
+.win[hidden] { display: none; }
+.win.focused { border-color: var(--fg); box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.6), 0 0 18px color-mix(in srgb, var(--fg) 25%, transparent); }
+.win.maximized { border-width: 0; box-shadow: none; }
+
+@keyframes win-open {
+  from { transform: scale(0.92); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+.win-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 30px;
+  padding: 0 4px 0 10px;
+  background: var(--panel);
+  color: var(--dim);
+  border-bottom: 1px solid var(--dim);
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  flex: none;
+}
+.win.focused .win-title {
+  color: var(--bg);
+  text-shadow: none;
+  background:
+    repeating-linear-gradient(to bottom, var(--fg) 0 2px, transparent 2px 4px) center / 100% 14px no-repeat,
+    var(--panel);
+}
+.win-title:active { cursor: grabbing; }
+.win-glyph, .win-name { background: var(--panel); color: var(--fg); padding: 0 6px; text-shadow: inherit; }
+.win:not(.focused) .win-glyph, .win:not(.focused) .win-name { color: var(--dim); }
+.win-name { margin-right: auto; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.win-controls { display: flex; gap: 4px; background: var(--panel); padding-left: 6px; }
+.win-controls button {
+  font: inherit;
+  width: 24px;
+  height: 22px;
+  line-height: 1;
+  color: var(--fg);
+  background: var(--bg);
+  border: 1px solid var(--dim);
+  cursor: pointer;
+  padding: 0;
+}
+.win-controls button:hover { background: var(--fg); color: var(--bg); }
+.win-controls button[aria-label='Close']:hover { background: var(--error); border-color: var(--error); }
+
+.win-body { flex: 1; min-height: 0; overflow: hidden; }
+
+.win-resize {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 16px;
+  height: 16px;
+  cursor: nwse-resize;
+  touch-action: none;
+  background: linear-gradient(135deg, transparent 50%, var(--dim) 50% 60%, transparent 60% 70%, var(--dim) 70% 80%, transparent 80%);
+}
+
+/* ── Taskbar ─────────────────────────────────────────────────── */
+.taskbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+  background: var(--panel);
+  border-top: 1px solid var(--fg);
+  overflow-x: auto;
+  z-index: 5000;
+}
+.task {
+  font: inherit;
+  color: var(--fg);
+  background: transparent;
+  border: 1px solid var(--dim);
+  padding: 1px 10px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.task.active { background: var(--fg); color: var(--bg); text-shadow: none; border-color: var(--fg); }
+.task.minimized { color: var(--dim); border-style: dashed; }
+.taskbar-hint { margin-left: auto; color: var(--dim); white-space: nowrap; }
+.taskbar-hint b { color: var(--accent); font-weight: normal; }
+.win:focus { outline: none; }
