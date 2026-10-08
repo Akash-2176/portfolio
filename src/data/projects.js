@@ -1,0 +1,113 @@
+import { company } from './profile';
+
+// status: LIVE | ACTIVE | DONE
+// `ezura`: delivered through EzuraArc — shown with a studio credit and case-study link.
+const caseStudy = (slug) => ({ label: 'Case study ↗', href: `${company.url}/portfolio/${slug}` });
+
+export const projects = [
+  {
+    slug: 'vc-police-portal',
+    name: 'VC Police Portal',
+    org: 'Namakkal District Police',
+    ezura: true,
+    status: 'LIVE',
+    summary: 'Festival safety platform for Vinayakar Chaturthi — idol registration, verification and live immersion tracking',
+    stack: ['React', 'React Native', 'Express', 'MongoDB', 'AWS', 'LeafletJS', 'ESRI Maps'],
+    features: [
+      'Led a 9-member engineering team from build to district-wide rollout',
+      'Idol registration, applicant verification and approval workflow',
+      'Live GPS route tracking and immersion monitoring on LeafletJS + ESRI maps',
+      'Ran demos and training to onboard police station writers',
+    ],
+    impact: '30+ stations live · 750+ idols registered · 150+ writers trained',
+    links: [caseStudy('vc-police-portal')],
+  },
+  {
+    slug: 'the-madras-ca',
+    name: 'The Madras CA',
+    org: 'Income tax filing & compliance',
+    ezura: true,
+    status: 'DONE',
+    summary: 'Secure onboarding and compliance workspace for chartered accountants',
+    stack: ['Next.js', 'TypeScript', 'NestJS', 'Python', 'Supabase', 'Prisma', 'Docker', 'AWS S3/SQS'],
+    features: [
+      'Multi-tenant backend in Docker with strict data isolation per client',
+      'Async document pipelines on AWS SQS with distributed workers',
+      'Automated verification and financial workflows',
+      'Role-based access to every client record',
+    ],
+    impact: '50+ corporate client environments · 10k+ monthly uploads',
+    links: [caseStudy('tmca')],
+  },
+  {
+    slug: 'puppy-digital-mart',
+    name: 'Puppy Digital Mart',
+    org: 'Local retail marketplace',
+    ezura: true,
+    status: 'LIVE',
+    summary: 'Serverless gift card & coupon marketplace connecting customers with nearby vendors',
+    stack: ['Express', 'AWS Lambda', 'API Gateway', 'MongoDB', 'React', 'GitHub Actions'],
+    features: [
+      'Event-driven serverless backend on Lambda + API Gateway',
+      'Vendor storefronts with digital voucher and gift card management',
+      'CI/CD via GitHub Actions for tested serverless deploys',
+    ],
+    impact: '50,000+ coupon transactions a month',
+    links: [
+      { label: 'Live ↗', href: 'https://www.puppydigitalmart.com' },
+      caseStudy('puppy-digital-mart'),
+      { label: 'Source ↗', href: 'https://github.com/Akash-2176/Puppy-Digital-Mart' },
+    ],
+  },
+  {
+    slug: 'zerotage',
+    name: 'Zerotage',
+    org: 'AI license plate detection & OCR',
+    status: 'DONE',
+    summary: 'End-to-end vehicle and license plate recognition',
+    stack: ['Python', 'YOLOv8', 'Roboflow', 'OpenCV', 'PyTesseract', 'FastAPI'],
+    features: [
+      'YOLOv8 vehicle detection + custom Roboflow model for plate localization',
+      'OpenCV image enhancement pipeline',
+      'OCR with PyTesseract and a custom whitelist, served from FastAPI',
+    ],
+    impact: 'Full detection → OCR pipeline behind one API',
+    links: [{ label: 'Source ↗', href: 'https://github.com/Akash-2176/Zerotage' }],
+  },
+  {
+    slug: 'cell-id-grabber',
+    name: 'Cell-ID Grabber',
+    org: 'Namakkal Police Cyber Cell',
+    status: 'LIVE',
+    summary: 'Android forensic utility that extracts cell tower identifiers for location mapping',
+    stack: ['Kotlin', 'Android', 'Telephony APIs'],
+    features: ['Extracts MCC, MNC, LAC and CID via telephony APIs', 'Maps tower identifiers for field investigations'],
+    impact: 'In production with the Cyber Cell · 40% faster field turnaround',
+    links: [{ label: 'Source ↗', href: 'https://github.com/Akash-2176/Cell-Id-Grabber' }],
+  },
+  {
+    slug: 'cybersec-guard',
+    name: 'CyberSec Guard',
+    org: 'Anti-phishing Chrome extension',
+    status: 'DONE',
+    summary: 'Manifest V3 extension that checks site safety and blocks phishing',
+    stack: ['JavaScript', 'Chrome MV3', 'Safe Browsing API'],
+    features: [
+      'Checks every site against the Google Safe Browsing API',
+      'Blocks flagged malware and phishing URLs with declarativeNetRequest rules',
+    ],
+    impact: 'Real-time phishing protection in the browser',
+    links: [],
+  },
+  {
+    slug: 'acli-os',
+    name: 'ACLI-OS Portfolio',
+    org: 'This site',
+    status: 'ACTIVE',
+    summary: 'A retro OS and a modern immersive site in one portfolio',
+    stack: ['React', 'Vite', 'WebGL', 'Web Audio'],
+    features: ['Ray-traced black hole wallpaper', 'Window manager + command-line shell', 'Handheld mobile UI'],
+    impact: 'Creative frontend engineering',
+    links: [{ label: 'Source ↗', href: 'https://github.com/Akash-2176/portfolio' }],
+  },
+];

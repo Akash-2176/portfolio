@@ -1,0 +1,85 @@
+.blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.blocks-reveal .blk {
+  animation: blk-in 0.12s steps(2, end) both;
+  animation-delay: calc(var(--i) * 40ms);
+}
+
+@keyframes blk-in {
+  from { opacity: 0; transform: translateY(2px); }
+  to { opacity: 1; transform: none; }
+}
+
+.blk-heading {
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 4px;
+}
+.blk-heading::before { content: '── '; color: var(--dim); }
+.blk-heading::after { content: ' ──'; color: var(--dim); }
+
+.blk-text { margin: 0; }
+.blk-spacer { height: 0.6em; }
+
+.blk-pre {
+  margin: 0;
+  font: inherit;
+  line-height: 1;
+  white-space: pre;
+  overflow-x: auto;
+  text-shadow: var(--glow);
+}
+
+.blk-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.blk-list li::before { content: '▸ '; color: var(--dim); }
+
+.blk-kv { margin: 0; display: grid; gap: 2px; }
+.blk-kv > div { display: grid; grid-template-columns: 11ch 1fr; gap: 1ch; }
+.blk-kv dt { color: var(--dim); }
+.blk-kv dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+
+.blk-table-wrap { overflow-x: auto; }
+.blk-table { border-collapse: collapse; }
+.blk-table th {
+  text-align: left;
+  font-weight: normal;
+  color: var(--dim);
+  border-bottom: 1px dashed var(--dim);
+  padding: 0 2ch 2px 0;
+}
+.blk-table td { padding: 1px 2ch 1px 0; vertical-align: top; }
+
+.blk-cmd {
+  font: inherit;
+  color: var(--accent);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
+.blk-cmd:hover, .blk-cmd:focus-visible { background: var(--accent); color: var(--bg); outline: none; text-decoration: none; }
+
+.blk-link { color: var(--accent); text-underline-offset: 3px; overflow-wrap: anywhere; }
+.blk-link:hover, .blk-link:focus-visible { background: var(--accent); color: var(--bg); outline: none; }
+
+.blk-badge { white-space: nowrap; }
+
+.tone-dim { color: var(--dim); }
+.tone-accent { color: var(--accent); }
+.tone-error { color: var(--error); }
+.tone-ok { color: var(--fg); }
+
+@media (max-width: 600px) {
+  .blk-table .wide-only { display: none; }
+}

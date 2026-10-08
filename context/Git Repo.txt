@@ -1,0 +1,199 @@
+🔥 Executive Summary — Who You Are as a Builder
+
+You are not a “tutorial clone” developer. You are a problem-solving product engineer with exposure across:
+
+Full Stack Web Development
+AI / Computer Vision
+Government / Real-world Utility Systems
+Cloud / DevOps / Deployment
+Mobile App Development
+UI/UX Experimental Interfaces
+Backend APIs / Databases
+
+That combo is rare for a student.
+
+Most students have:
+
+one CRUD app + calculator + todo list + fake portfolio
+
+You have:
+
+tracking systems, AI apps, public utility tools, CLI portfolio concepts, serverless infra, production deployment struggles, real clients/use-cases.
+
+That matters.
+
+🧠 Complete Knowledge Summary of Projects You’ve Built / Worked On
+1. GitHub Portfolio & Open Source Presence
+
+You maintain repositories under Akash-2176. Your GitHub should position you as a practical software engineer, not just coder.
+
+Current likely perception:
+
+Hands-on builder
+Tries ambitious projects
+Works across stacks
+Needs cleaner branding / documentation / polish
+🚀 Major Projects You’ve Done
+2. Cell-ID-Grabber (Kotlin Android App)
+Stack:
+Kotlin
+Android APIs
+Telecom metadata extraction
+Purpose:
+
+Collects:
+
+MCC
+MNC
+LAC
+CID
+Value:
+
+Not a beginner project. This suggests:
+
+Android native knowledge
+Hardware/system API usage
+Telecom/network understanding
+Security/public sector application thinking
+Resume Power:
+
+Strong if documented properly.
+
+3. Real-Time Plant Disease Diagnosis Using Smartphone Camera
+Stack:
+CNN
+Mobile Camera Integration
+Image Classification
+AI Deployment
+Goal:
+
+Detect plant disease using live camera feed.
+
+Why this hits:
+Solves agriculture problem
+Real-world AI
+Mobile + ML integration
+Recruiter View:
+
+“Undergrad who actually applied AI usefully.”
+
+4. AnimeGANv2 Cartoonizer Project
+Stack:
+Deep Learning
+Image-to-Image Translation
+GANs
+Function:
+
+Upload image → cartoonized output.
+
+Signals:
+Model integration
+AI inference pipeline
+Media transformation systems
+5. Namakkal Police Idol Registration + Live Tracking Portal
+Stack:
+Web Portal
+Maps
+Live Tracking
+Registration System
+Admin Operations
+Real Use Case:
+
+Used during Vinayakar Chaturthi for police monitoring.
+
+This is huge.
+
+Because it proves:
+
+Public sector exposure
+Scale thinking
+Geo systems
+Live data handling
+Trustworthy systems
+This should be top portfolio item.
+6. CLI Portfolio Website
+Stack:
+React
+Terminal UI
+CRT Effects
+Custom Commands
+Interactive Frontend Engineering
+Why it matters:
+
+Shows personality + frontend creativity.
+
+Most portfolios are boring.
+Yours can be memorable.
+
+7. Laravel Backend + Web Scraper Assignment
+Stack:
+PHP Laravel
+SQLite
+REST APIs
+Symfony DomCrawler
+Data scraping
+Features:
+CRUD APIs
+Scraping oldest blog posts
+Storage pipeline
+Signals:
+Backend architecture
+Automation
+Parsing external content
+Service layer knowledge
+8. Serverless AWS + Express + MongoDB Practice
+Stack:
+AWS Lambda
+Serverless Framework
+Express
+MongoDB
+Authentication
+Meaning:
+
+You’re not stuck in localhost land.
+
+You’re learning deployable cloud systems.
+
+9. Production Deployment / PM2 / Ubuntu / GPU Ops
+Stack:
+Linux
+PM2
+Production Build Systems
+Driver Debugging
+Runtime Ops
+Why it matters:
+
+You’ve touched DevOps pain.
+
+That alone puts you above many freshers.
+
+🧰 Skills Inferred From Your Work
+Languages
+Java
+Kotlin
+JavaScript
+TypeScript
+PHP
+Python
+SQL
+Frameworks
+React
+Next.js
+Laravel
+Express
+NestJS (exposure)
+Serverless Framework
+AI/ML
+CNN
+GANs
+Image Processing
+Classification Models
+Infra
+Ubuntu
+AWS
+PM2
+Deployment pipelines
+Databases
+MongoDB
+SQLite
+SQL systems
