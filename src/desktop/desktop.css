@@ -210,3 +210,21 @@
 .taskbar-hint { margin-left: auto; color: var(--dim); white-space: nowrap; }
 .taskbar-hint b { color: var(--accent); font-weight: normal; }
 .win:focus { outline: none; }
+
+/* ── Smaller desktops & tablets ──────────────────────────────── */
+.win-body { container-type: inline-size; }
+
+@media (max-width: 1100px) {
+  .topbar { gap: 10px; }
+  .topbar-right { gap: 10px; }
+  .wallpaper-mark { font-size: 44px; }
+}
+@media (max-width: 960px) {
+  .topbar-title { visibility: hidden; }
+  .taskbar-hint { display: none; }
+}
+@media (max-height: 760px) {
+  .icons { grid-template-rows: repeat(auto-fill, 78px); grid-auto-columns: 84px; gap: 4px; }
+  .icon-glyph { width: 40px; height: 34px; font-size: 20px; }
+  .icon-label { font-size: 16px; }
+}

@@ -13,7 +13,10 @@ const useMedia = (query) => {
   return !!matches;
 };
 
-export const useIsDesktop = () => useMedia('(pointer: fine) and (min-width: 900px)');
+// Desktop OS for tablet-sized screens and up (touch or mouse); the handheld is for phones,
+// including phones in landscape (short viewport).
+export const useIsDesktop = () => useMedia('(min-width: 760px) and (min-height: 480px)');
+export const useCoarsePointer = () => useMedia('(pointer: coarse)');
 export const useReducedMotion = () => useMedia('(prefers-reduced-motion: reduce)');
 
 export const useClock = () => {

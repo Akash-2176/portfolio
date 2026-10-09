@@ -1,4 +1,5 @@
 import { mix, rgba } from './colors';
+import { createFlow } from './surge';
 
 const TAU = Math.PI * 2;
 const WHITE = [255, 255, 255];
@@ -40,6 +41,10 @@ export function synthwave(ctx, palette) {
   const stars = Array.from({ length: 220 }, () => ({ x: Math.random(), y: Math.random() ** 1.6, p: Math.random() * TAU, s: Math.random() }));
 
   const hot = mix(palette.accent, WHITE, 0.35);
+  // Grid and sun stripes share one flow that surges now and then.
+  const flow = createFlow(1, 1.4);
+  let travel = 0;
+  let surge = 0;
 
   const resize = (width, height) => {
     w = width;
@@ -82,7 +87,7 @@ export function synthwave(ctx, palette) {
     }
 
     // Occasional shooting star
-    if (Math.random() < 0.004 && shooting.length < 2) {
+    if (Math.random() < 0.004 + surge * 0.02 && shooting.length < 2) {
       shooting.push({ x: Math.random() * w, y: Math.random() * horizon * 0.4, life: 1 });
     }
     for (let i = shooting.length - 1; i >= 0; i--) {
@@ -105,7 +110,7 @@ export function synthwave(ctx, palette) {
 
   const drawSun = (t) => {
     ctx.globalCompositeOperation = 'lighter';
-    for (const [r0, r1, a] of [[sr * 0.9, sr * 2.2, 0.35], [sr, sr * 4.5, 0.12]]) {
+    for (const [r0, r1, a] of [[sr * 0.9, sr * 2.2, 0.35 + surge * 0.15], [sr, sr * 4.5, 0.12 + surge * 0.06]]) {
       const halo = ctx.createRadialGradient(vx, sy, r0, vx, sy, r1);
       halo.addColorStop(0, rgba(palette.accent, a));
       halo.addColorStop(1, rgba(palette.accent, 0));
@@ -124,7 +129,7 @@ export function synthwave(ctx, palette) {
     const split = sy - sr * 0.3;
     ctx.rect(vx - sr, top, sr * 2, split - top);
     const period = sr * 0.18;
-    const offset = (t * 0.01) % period;
+    const offset = (travel * 12) % period;
     for (let y = split - period + offset; y < sy + sr; y += period) {
       const k = Math.max(0, (y - split) / (sr * 1.15));
       const gap = period * (0.2 + k * 0.6);
@@ -208,7 +213,7 @@ export function synthwave(ctx, palette) {
     fade.addColorStop(0.25, rgba(palette.fg, 0.45));
     fade.addColorStop(1, rgba(palette.fg, 0.9));
     const rows = 22;
-    const roll = (t * 0.0004) % 1;
+    const roll = (travel * 0.5) % 1;
     for (const [width, alpha] of [[4, 0.18], [1.2, 1]]) {
       ctx.globalAlpha = alpha;
       ctx.lineWidth = width;
@@ -240,7 +245,9 @@ export function synthwave(ctx, palette) {
     ctx.globalCompositeOperation = 'source-over';
   };
 
-  const frame = (t) => {
+  const frame = (t, dt = 16) => {
+    travel = flow.step(t, dt);
+    surge = flow.level;
     drawSky(t);
     drawSun(t);
     drawMountains();

@@ -118,3 +118,9 @@
 }
 .toggle:hover .toggle-state, .toggle:focus-visible .toggle-state { color: var(--accent); }
 .toggle-state { white-space: pre; }
+
+/* Narrow Projects window: list above details. */
+@container (max-width: 540px) {
+  .proj-split { grid-template-columns: 1fr; grid-template-rows: minmax(0, 38%) 1fr; }
+  .proj-pane { border-right: 0; border-bottom: 1px solid var(--line); }
+}
