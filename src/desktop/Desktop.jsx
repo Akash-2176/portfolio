@@ -4,7 +4,7 @@ import { APP_COMPONENTS } from '../apps/apps';
 import { THEMES, WALLPAPERS, useSettings } from '../system/settings';
 import Wallpaper from '../wallpapers/Wallpaper';
 import Widgets from './Widgets';
-import { useClock } from '../system/hooks';
+import { useClock, useCoarsePointer } from '../system/hooks';
 import { play } from '../system/sound';
 import Window from './Window';
 import { focusedWindow, initialWindows, windowsReducer } from './windows';
@@ -92,17 +92,19 @@ const TopBar = ({ title, onMenu }) => {
   );
 };
 
-const Icon = ({ app, selected, onSelect, onOpen }) => (
+// Mouse: click selects, double-click opens. Touch: a single tap opens.
+const Icon = ({ app, selected, onSelect, onOpen, tapToOpen }) => (
   <button
     type="button"
     className={`icon${selected ? ' selected' : ''}`}
     onClick={() => {
+      if (tapToOpen) return onOpen(app.id);
       onSelect(app.id);
-      play('click');
+      return play('click');
     }}
     onDoubleClick={() => onOpen(app.id)}
     onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), onOpen(app.id))}
-    title={`Double-click to open ${app.title}`}
+    title={tapToOpen ? `Open ${app.title}` : `Double-click to open ${app.title}`}
   >
     <span className="icon-glyph" aria-hidden="true">{app.glyph}</span>
     <span className="icon-label">{app.file}</span>
@@ -111,6 +113,7 @@ const Icon = ({ app, selected, onSelect, onOpen }) => (
 
 export default function Desktop({ reboot }) {
   const { setStyle } = useSettings();
+  const tapToOpen = useCoarsePointer();
   const [state, dispatch] = useReducer(windowsReducer, initialWindows);
   const [selected, setSelected] = useState(null);
   const areaRef = useRef(null);
@@ -119,7 +122,10 @@ export default function Desktop({ reboot }) {
 
   useEffect(() => {
     const el = areaRef.current;
-    const measure = () => setBounds({ w: el.clientWidth, h: el.clientHeight });
+    const measure = () => {
+      setBounds({ w: el.clientWidth, h: el.clientHeight });
+      dispatch({ type: 'fit', bw: el.clientWidth, bh: el.clientHeight });
+    };
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(el);
@@ -140,9 +146,10 @@ export default function Desktop({ reboot }) {
   useEffect(() => {
     const area = areaRef.current;
     const left = (iconsRef.current?.offsetLeft ?? 16) + (iconsRef.current?.offsetWidth ?? 96) + 20;
-    const w = Math.min(600, area.clientWidth * 0.42);
-    const h = Math.min(380, area.clientHeight * 0.5);
-    const rect = area.clientWidth >= 1100 ? { x: left, y: area.clientHeight - h - 24, w, h } : undefined;
+    const share = area.clientWidth >= 1100 ? 0.42 : 0.52;
+    const w = Math.min(600, Math.max(340, area.clientWidth * share), area.clientWidth - left - 16);
+    const h = Math.min(380, Math.max(240, area.clientHeight * 0.52));
+    const rect = { x: left, y: Math.max(12, area.clientHeight - h - 20), w, h };
     dispatch({ type: 'open', appId: 'terminal', rect, viewport: { vw: window.innerWidth, vh: window.innerHeight } });
   }, []);
 
@@ -183,7 +190,7 @@ export default function Desktop({ reboot }) {
 
         <nav className="icons" aria-label="Desktop" ref={iconsRef}>
           {APPS.map((app) => (
-            <Icon key={app.id} app={app} selected={selected === app.id} onSelect={setSelected} onOpen={openApp} />
+            <Icon key={app.id} app={app} selected={selected === app.id} onSelect={setSelected} onOpen={openApp} tapToOpen={tapToOpen} />
           ))}
         </nav>
 
@@ -217,7 +224,9 @@ export default function Desktop({ reboot }) {
             </button>
           );
         })}
-        <span className="taskbar-hint">double-click an icon · or type <b>help</b></span>
+        <span className="taskbar-hint">
+          {tapToOpen ? 'tap' : 'double-click'} an icon · or type <b>help</b>
+        </span>
       </footer>
     </div>
   );

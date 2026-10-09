@@ -50,6 +50,21 @@ export function windowsReducer(state, action) {
       return { ...state, windows: update(action.appId, { x: action.x, y: action.y }) };
     case 'resize':
       return { ...state, windows: update(action.appId, { w: action.w, h: action.h }) };
+    case 'fit': {
+      // Workspace resized: shrink oversized windows and pull title bars back on screen.
+      const { bw, bh } = action;
+      let changed = false;
+      const next = windows.map((win) => {
+        const w = Math.max(280, Math.min(win.w, bw - 16));
+        const h = Math.max(180, Math.min(win.h, bh - 16));
+        const x = Math.min(Math.max(win.x, 60 - w), bw - 80);
+        const y = Math.min(Math.max(win.y, 0), bh - 40);
+        if (w === win.w && h === win.h && x === win.x && y === win.y) return win;
+        changed = true;
+        return { ...win, w, h, x, y };
+      });
+      return changed ? { ...state, windows: next } : state;
+    }
     default:
       return state;
   }

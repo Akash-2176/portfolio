@@ -48,7 +48,11 @@
   cursor: pointer;
   text-align: left;
   display: flex;
-  align-items: flex-end;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  /* Sizes below scale with each panel, not the viewport. */
+  container-type: inline-size;
   transition: flex-grow 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.4s;
   font: inherit;
 }
@@ -65,13 +69,14 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: clamp(24px, 6vw, 72px);
-  padding-bottom: clamp(56px, 9vh, 96px);
-  max-width: 520px;
+  margin-top: auto;
+  padding: 0 clamp(20px, 8cqi, 72px) clamp(48px, 9vh, 96px);
+  flex-shrink: 0;
+  max-width: 100%;
 }
 .choice-kicker { font-size: 14px; letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.7; }
-.choice-title { font-size: clamp(48px, 7vw, 96px); line-height: 0.95; }
-.choice-desc { font-size: 18px; line-height: 1.45; opacity: 0.8; max-width: 34ch; }
+.choice-title { font-size: clamp(40px, 12cqi, 104px); line-height: 0.95; overflow-wrap: anywhere; }
+.choice-desc { font-size: clamp(15px, 2.4cqi, 18px); line-height: 1.45; opacity: 0.8; max-width: 34ch; }
 .choice-cta { margin-top: 8px; align-self: flex-start; }
 
 /* ── Retro side ──────────────────────────────────────────────── */
@@ -92,18 +97,21 @@
   pointer-events: none;
 }
 .choice-retro .choice-title { letter-spacing: 0.04em; }
-.choice-retro .choice-desc { font-size: 22px; }
+.choice-retro .choice-desc { font-size: clamp(18px, 3cqi, 22px); }
 .choice-retro .choice-kicker { font-size: 20px; }
-.choice-retro .choice-cta { font-size: 26px; color: #ffb000; text-shadow: 0 0 8px rgba(255, 176, 0, 0.6); }
+.choice-retro .choice-cta { font-size: clamp(22px, 3.4cqi, 26px); color: #ffb000; text-shadow: 0 0 8px rgba(255, 176, 0, 0.6); }
 .choice-retro:hover .choice-cta { background: #ffb000; color: #030804; text-shadow: none; }
 
 .retro-screen {
-  position: absolute;
-  top: 22%;
-  left: clamp(24px, 6vw, 72px);
-  right: clamp(24px, 6vw, 72px);
+  position: relative;
+  z-index: 2;
+  /* Clears the floating header; gives way (shrinks, then hides) before the copy does. */
+  margin: clamp(96px, 16vh, 180px) clamp(20px, 8cqi, 72px) 24px;
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow: hidden;
   max-width: 440px;
-  padding: 18px 20px;
+  padding: clamp(10px, 2cqi, 18px) clamp(14px, 2.4cqi, 20px);
   border: 2px solid #33ff66;
   border-radius: 14px;
   box-shadow: 0 0 30px rgba(51, 255, 102, 0.25), inset 0 0 30px rgba(51, 255, 102, 0.15);
@@ -170,18 +178,25 @@
   background: radial-gradient(400px circle at var(--mx) var(--my), rgba(255, 255, 255, 0.12), transparent 60%);
 }
 
+/* Phones / narrow windows: stack the two panels. */
 @media (max-width: 760px) {
   .chooser { flex-direction: column; }
-  .choice { align-items: flex-end; }
-  .choice-body { padding: 20px 20px 28px; gap: 6px; }
-  .choice-title { font-size: 48px; }
-  .choice-desc { font-size: 16px; }
-  .choice-retro .choice-desc { font-size: 20px; }
-  .retro-screen { top: 86px; font-size: 18px; padding: 10px 14px; }
+  .choice-body { padding: 0 20px 22px; gap: 6px; }
+  .retro-screen { margin: 72px 20px 10px; font-size: 16px; padding: 8px 12px; }
   .chooser-head { top: 10px; padding: 6px 16px; }
   .chooser-head strong { font-size: 16px; }
   .chooser-foot { display: none; }
+  .choice-modern .choice-body { padding-top: 16px; }
+  .hover-retro .choice-retro,
+  .hover-modern .choice-modern { flex-grow: 1; }
 }
-@media (max-width: 760px) and (max-height: 700px) {
+
+/* Not enough height for the preview: drop it rather than overlap the copy. */
+@media (max-height: 560px), (max-width: 760px) and (max-height: 780px) {
   .retro-screen { display: none; }
+  .choice-retro .choice-body { padding-top: 64px; }
+}
+@media (max-height: 460px) {
+  .choice-desc { display: none; }
+  .chooser-foot { display: none; }
 }

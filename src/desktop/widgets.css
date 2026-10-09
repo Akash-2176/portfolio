@@ -96,7 +96,15 @@
 .w-log-line { flex: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; animation: w-in 0.3s steps(3, end); }
 
 /* Fit what the screen allows */
-@media (max-width: 1199px) { .widgets { display: none; } }
+@media (max-width: 1199px) {
+  .widgets { width: 230px; gap: 10px; }
+  .w-time { font-size: 48px; }
+  .w-time span { font-size: 22px; }
+  .w-name { font-size: 24px; }
+  .w-sys, .w-log { display: none; }
+}
+@media (max-width: 1199px) and (max-height: 780px) { .w-featured { display: none; } }
+@media (max-width: 899px) { .widgets { display: none; } }
 @media (max-height: 860px) { .w-log { display: none; } }
 @media (max-height: 700px) { .w-sys { display: none; } }
 @media (max-height: 560px) { .w-featured { display: none; } }

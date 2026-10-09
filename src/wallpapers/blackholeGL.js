@@ -1,3 +1,5 @@
+import { createFlow } from './surge';
+
 // Ray-traced black hole (WebGL). Each pixel fires a light ray that bends around a
 // Schwarzschild black hole (units: Schwarzschild radius = 1), so the far side of the
 // accretion disk appears lensed over and under the horizon, as in Interstellar.
@@ -12,6 +14,8 @@ precision highp float;
 uniform vec2 uRes;
 uniform vec2 uCenter;
 uniform float uTime;
+uniform float uFlow;   // accumulated disk flow phase (speed surges, never jumps)
+uniform float uSurge;  // 0..1, current surge strength
 uniform vec3 uFg;
 uniform vec3 uAccent;
 uniform vec3 uBg;
@@ -47,25 +51,30 @@ float fbm(vec3 p) {
 }
 
 // Filaments: fast variation across radius, slow along the orbit -> long streaks.
-float filaments(float r, float a) {
+// detail fades the finest octave on lensed images, where it would alias into dots.
+float filaments(float r, float a, float detail) {
   vec2 c = vec2(cos(a), sin(a));
   float n = fbm(vec3(r * 2.4, c * 1.6));
-  float fine = noise(vec3(r * 11.0, c * 5.0));
-  return n * 0.8 + fine * 0.45;
+  float fine = noise(vec3(r * 9.0, c * 4.0));
+  return n * 0.8 + mix(0.22, fine, detail) * 0.45;
 }
 
-vec3 disk(vec3 p, vec3 dir, out float alpha) {
+vec3 disk(vec3 p, vec3 dir, float detail, out float alpha) {
   float r = length(p.xz);
   float phi = atan(p.z, p.x);
   float omega = 1.6 * pow(r, -1.5);
 
   // Differential rotation shears the filaments. Two phases cross-fade so the
-  // pattern keeps flowing without winding up forever.
-  float T = uTime * 0.07;
+  // pattern keeps flowing without winding up forever. Everything time-dependent
+  // in the disk must go through f1/f2 — raw uTime here would shear without bound
+  // and break the streaks into speckle after a few minutes.
+  float T = uFlow;
   float f1 = fract(T);
   float f2 = fract(T + 0.5);
   float w1 = 1.0 - abs(2.0 * f1 - 1.0);
-  float dens = w1 * filaments(r, phi + omega * f1 * 9.0) + (1.0 - w1) * filaments(r + 3.3, phi + omega * f2 * 9.0);
+  float a1 = phi + omega * f1 * 9.0;
+  float a2 = phi + omega * f2 * 9.0;
+  float dens = w1 * filaments(r, a1, detail) + (1.0 - w1) * filaments(r + 3.3, a2, detail);
 
   dens = 0.15 + dens * 0.95;
   float edge = smoothstep(RIN * 0.92, RIN + 1.0, r) * (1.0 - smoothstep(ROUT * 0.5, ROUT, r));
@@ -75,7 +84,7 @@ vec3 disk(vec3 p, vec3 dir, out float alpha) {
   vec3 v = normalize(vec3(-p.z, 0.0, p.x)) * sqrt(0.5 / r);
   float dop = pow(max(1.0 + 1.5 * dot(v, -dir), 0.15), 3.0);
 
-  float b = temp * edge * dens * dop;
+  float b = temp * edge * dens * dop * (1.0 + 0.22 * uSurge);
   alpha = clamp(b * 1.3, 0.0, 1.0);
 
   vec3 deep = uFg * 0.45;
@@ -83,10 +92,11 @@ vec3 disk(vec3 p, vec3 dir, out float alpha) {
   vec3 col = mix(deep, uFg, smoothstep(0.05, 0.5, temp * dens));
   col = mix(col, hot, smoothstep(0.5, 1.3, b));
 
-  // Plasma flares: bright blue-white knots riding the inner disk.
-  float fa = phi + omega * uTime * 0.6;
-  float flare = smoothstep(0.7, 0.92, noise(vec3(r * 1.3, cos(fa) * 2.5, sin(fa) * 2.5 + uTime * 0.15)));
-  flare *= smoothstep(RIN * 2.6, RIN * 1.1, r) * dop;
+  // Plasma flares: bright blue-white knots riding the inner disk (same bounded flow).
+  float k1 = noise(vec3(r * 1.3, cos(a1) * 2.5, sin(a1) * 2.5 + f1 * 1.5));
+  float k2 = noise(vec3(r * 1.3 + 5.1, cos(a2) * 2.5, sin(a2) * 2.5 + f2 * 1.5));
+  float flare = smoothstep(0.7, 0.92, w1 * k1 + (1.0 - w1) * k2);
+  flare *= smoothstep(RIN * 2.6, RIN * 1.1, r) * dop * mix(0.5, 1.0, detail) * (0.6 + 1.1 * uSurge);
   alpha = clamp(alpha + flare * 0.5, 0.0, 1.0);
   return col * b * 1.9 + vec3(0.8, 0.9, 1.0) * flare * 1.4;
 }
@@ -96,8 +106,8 @@ void main() {
   float roll = -0.3;
   uv = mat2(cos(roll), sin(roll), -sin(roll), cos(roll)) * uv;
 
-  float el = 0.12 + 0.025 * sin(uTime * 0.05);
-  float az = 0.15 * sin(uTime * 0.03);
+  float el = 0.12 + 0.035 * sin(uTime * 0.07);
+  float az = 0.2 * sin(uTime * 0.045);
   vec3 camPos = vec3(sin(az) * cos(el), sin(el), -cos(az) * cos(el)) * 12.0;
   vec3 fwd = normalize(-camPos);
   vec3 right = normalize(cross(vec3(0.0, 1.0, 0.0), fwd));
@@ -112,6 +122,7 @@ void main() {
   float alpha = 0.0;
   vec3 haze = vec3(0.0);
   float minR = 100.0;
+  float crossings = 0.0;
   bool captured = false;
 
   for (int i = 0; i < 180; i++) {
@@ -133,7 +144,9 @@ void main() {
       float pr = length(p.xz);
       if (pr > RIN * 0.9 && pr < ROUT) {
         float a;
-        vec3 c = disk(p, normalize(vel), a);
+        // First crossing is the direct image; later ones are lensed and compressed.
+        vec3 c = disk(p, normalize(vel), crossings < 0.5 ? 1.0 : 0.25, a);
+        crossings += 1.0;
         col += c * (1.0 - alpha);
         alpha += a * (1.0 - alpha);
         if (alpha > 0.97) break;
@@ -203,12 +216,17 @@ export function blackholeGL(canvas, palette) {
   const uRes = u('uRes');
   const uCenter = u('uCenter');
   const uTime = u('uTime');
+  const uFlow = u('uFlow');
+  const uSurge = u('uSurge');
+  // Base flow is a touch faster than before; surges briefly push it ~2.5x.
+  const flow = createFlow(0.1, 1.6);
   gl.uniform3fv(u('uFg'), norm(palette.fg));
   gl.uniform3fv(u('uAccent'), norm(palette.accent));
   gl.uniform3fv(u('uBg'), norm(palette.bg));
 
   // Ray tracing is heavy: render below CSS resolution and drop further if frames run slow.
-  let scale = 0.6;
+  const MAX_SCALE = 0.6;
+  let scale = MAX_SCALE;
   let cssW = 0;
   let cssH = 0;
   let slow = 0;
@@ -231,14 +249,21 @@ export function blackholeGL(canvas, palette) {
       applySize();
     },
     frame(t, dt) {
+      // Adapt resolution both ways, so one slow moment (a drag, a tab switch) isn't permanent.
       if (dt > 45) slow += 1;
-      else slow = Math.max(0, slow - 1);
-      if (slow > 20 && scale > 0.3) {
-        scale *= 0.8;
+      else if (dt < 30) slow -= 1;
+      if (slow > 20 && scale > 0.35) {
+        scale = Math.max(0.35, scale * 0.8);
+        slow = 0;
+        applySize();
+      } else if (slow < -240 && scale < MAX_SCALE) {
+        scale = Math.min(MAX_SCALE, scale * 1.15);
         slow = 0;
         applySize();
       }
       gl.uniform1f(uTime, t / 1000);
+      gl.uniform1f(uFlow, flow.step(t, dt));
+      gl.uniform1f(uSurge, flow.level);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     },
     destroy() {

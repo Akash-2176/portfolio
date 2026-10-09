@@ -21,6 +21,17 @@ describe('window manager', () => {
     expect(focusedWindow(s.windows).appId).toBe('projects');
   });
 
+  it('keeps windows reachable when the workspace shrinks', () => {
+    const s = windowsReducer(open(initialWindows, 'projects'), { type: 'fit', bw: 600, bh: 400 });
+    const [win] = s.windows;
+    expect(win.w).toBeLessThanOrEqual(584);
+    expect(win.h).toBeLessThanOrEqual(384);
+    expect(win.x).toBeLessThanOrEqual(600 - 80);
+    expect(win.y).toBeLessThanOrEqual(400 - 40);
+    // No-op when everything already fits.
+    expect(windowsReducer(s, { type: 'fit', bw: 600, bh: 400 })).toBe(s);
+  });
+
   it('closes windows', () => {
     const s = windowsReducer(open(initialWindows, 'terminal'), { type: 'close', appId: 'terminal' });
     expect(s.windows).toHaveLength(0);
